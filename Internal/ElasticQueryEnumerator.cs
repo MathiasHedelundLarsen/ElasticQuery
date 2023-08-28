@@ -24,7 +24,8 @@ namespace ElasticQuery.Internal
         }
 
         public void Dispose()
-        {            
+        {
+            _innerEnumerator?.Dispose();
         }
 
         public ValueTask DisposeAsync()
