@@ -1,7 +1,7 @@
 ﻿using ElasticQuery.ExpressionsVisitors;
 using ElasticQuery.Internal;
 using System.Collections;
-using System.Linq.Dynamic.Core;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -32,13 +32,27 @@ namespace ElasticQuery
             Expression = Expression.Constant(this);
         }
 
-        internal ElasticQuery(ElasticQueryProvider elasticQueryProvider, string indexName)
+        /// <summary>
+        /// This is referenced by reflection from ElasticQuery.Create
+        /// </summary>
+        /// <param name="elasticQueryProvider"></param>
+        /// <param name="expression"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        [RequiresUnreferencedCode("This is referenced by reflection from ElasticQuery.Create")]
+        private ElasticQuery(ElasticQueryProvider elasticQueryProvider, string indexName)
         {
             _elasticQueryProvider = elasticQueryProvider;
             IndexName = indexName;
             Expression = Expression.Constant(this);
         }
 
+        /// <summary>
+        /// This is referenced by reflection from ElasticQuery.Create
+        /// </summary>
+        /// <param name="elasticQueryProvider"></param>
+        /// <param name="expression"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        [RequiresUnreferencedCode("This is referenced by reflection from ElasticQuery.Create")]
         internal ElasticQuery(ElasticQueryProvider elasticQueryProvider, Expression expression)
         {            
             Expression = expression;

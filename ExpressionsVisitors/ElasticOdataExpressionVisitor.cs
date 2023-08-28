@@ -4,7 +4,7 @@ namespace ElasticQuery.ExpressionsVisitors
 {
     public class ElasticOdataExpressionVisitor : ElasticSqlVisitor
     {
-        public static string _DOT_ = "_DOT_";
+        public static string _NESTED_DOT_MEMBER_ = "_NESTED_DOT_MEMBER_";
 
         private readonly List<VisitedProperty> _visitedProperties;       
 
@@ -47,7 +47,7 @@ namespace ElasticQuery.ExpressionsVisitors
 
                             _visitedProperties.Add(new VisitedProperty
                             {
-                                Alias = name.Replace(".", _DOT_),
+                                Alias = name.Replace(".", _NESTED_DOT_MEMBER_),
                                 Value = name
                             });
                         }

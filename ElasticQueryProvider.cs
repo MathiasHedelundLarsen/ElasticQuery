@@ -38,7 +38,7 @@ namespace ElasticQuery
 
             string indexName = rootQuery.IndexName;
 
-            var queryVisitor = new ElasticQueryVisitorV2(rootQuery.ElementType);
+            var queryVisitor = new ElasticQueryVisitor(rootQuery.ElementType);
 
             queryVisitor.Visit(expression);
 
@@ -65,6 +65,18 @@ namespace ElasticQuery
             }
 
             return Activator.CreateInstance<TResult>();
+        }
+
+        public async Task<Type> GetAnonymousSchemaTypeAsync(string indexName)
+        {
+            //Use describe endpoint in elastic
+            return typeof(object);
+        }
+
+        public Type GetAnonymousSchemaType(string indexName)
+        {
+            //Use describe endpoint in elastic
+            return typeof(object);
         }
 
         public IQueryable CreateQuery(Expression expression)
@@ -110,7 +122,7 @@ namespace ElasticQuery
 
             string indexName = rootQuery.IndexName;
 
-            var queryVisitor = new ElasticQueryVisitorV2(rootQuery.ElementType);
+            var queryVisitor = new ElasticQueryVisitor(rootQuery.ElementType);
 
             queryVisitor.Visit(expression);
 

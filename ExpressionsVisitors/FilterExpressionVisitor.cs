@@ -1,6 +1,7 @@
-﻿using System.Linq.Expressions;
-using System.Reflection;
+﻿using System.Collections;
+using System.Linq.Expressions;
 using System.Text;
+using System.Text.Json;
 
 namespace ElasticQuery.ExpressionsVisitors
 {
@@ -9,9 +10,11 @@ namespace ElasticQuery.ExpressionsVisitors
         private StringBuilder _sb;
         private readonly Type _inputType;
         private readonly List<object> _filterParams;
+        private readonly NestedObjectExpressionVisitor _nestedObjectVisitor;
 
         public FilterExpressionVisitor(Type inputType, List<object> filterParams)
         {
+            _nestedObjectVisitor = new NestedObjectExpressionVisitor();
             _sb = new StringBuilder();
             _inputType = inputType;
             _filterParams = filterParams;
@@ -36,7 +39,7 @@ namespace ElasticQuery.ExpressionsVisitors
             Visit(expression);
 
             return _sb.ToString();
-        }        
+        }
 
         protected override Expression VisitMember(MemberExpression node)
         {
@@ -85,7 +88,7 @@ namespace ElasticQuery.ExpressionsVisitors
             {
                 _sb.Append((methodCallExpression.Arguments[0] as MemberExpression)!.Member.Name);
 
-                switch(node.NodeType)
+                switch (node.NodeType)
                 {
                     case ExpressionType.Equal:
                         var val = GetValue(node.Right);
@@ -144,7 +147,56 @@ namespace ElasticQuery.ExpressionsVisitors
             }
             else
             {
-                Visit(node.Left);
+                if (node.Left is ConditionalExpression conditionalExpression)
+                {
+                    _nestedObjectVisitor.Visit(conditionalExpression.IfFalse);
+                    _sb.Append(_nestedObjectVisitor.Members.Pop().Member.Name);
+
+                    while (_nestedObjectVisitor.Members.Count > 0)
+                    {
+                        _sb.Append("." + _nestedObjectVisitor.Members.Pop().Member.Name);
+                    }
+                }
+                else if (node.Left is MethodCallExpression callExpression && callExpression.Method.Name == nameof(IList.Contains))
+                {
+                    var values = (IList)GetValue(callExpression.Arguments[0])!;
+                    var memberName = (callExpression.Arguments[1] as MemberExpression)?.Member.Name;
+
+                    _sb.Append("(");
+
+                    for (int i = 0; i < values.Count - 1; i++)
+                    {
+                        var value = values[i];
+
+                        if (value == null)
+                        {
+                            _sb.Append(memberName + " = " + NULL + " OR ");
+                        }
+                        else
+                        {
+                            _sb.Append(memberName + " = ? OR ");
+                            _filterParams.Add(value);
+                        }
+                    }
+
+                    var lastValue = values[values.Count - 1];
+
+                    if (lastValue == null)
+                    {
+                        _sb.Append(memberName + " = " + NULL);
+                    }
+                    else
+                    {
+                        _sb.Append(memberName + " = ?");
+                        _filterParams.Add(lastValue);
+                    }
+
+                    _sb.Append(")");                    
+                }
+                else
+                {
+                    Visit(node.Left);
+                }
 
                 switch (node.NodeType)
                 {
@@ -210,11 +262,12 @@ namespace ElasticQuery.ExpressionsVisitors
                         throw new NotSupportedException(string.Format("The binary operator '{0}' is not supported", node.NodeType));
                 }
 
+
                 Visit(node.Right);
             }
 
             _sb.Append(")");
-            
+
             return node;
         }
     }

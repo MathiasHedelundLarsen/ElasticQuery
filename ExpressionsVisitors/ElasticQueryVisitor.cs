@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace ElasticQuery.ExpressionsVisitors
 {
-    public sealed class ElasticQueryVisitorV2 : ExpressionVisitor
+    public sealed class ElasticQueryVisitor : ExpressionVisitor
     {        
         private readonly Type _elementType;
         private readonly List<string> _filters = new List<string>();
@@ -18,7 +18,7 @@ namespace ElasticQuery.ExpressionsVisitors
 
         public LambdaExpression? SelectExpression { get; private set; }
 
-        public ElasticQueryVisitorV2(Type elementType)
+        public ElasticQueryVisitor(Type elementType)
         {
             _elementType = elementType;
         }
@@ -40,6 +40,26 @@ namespace ElasticQuery.ExpressionsVisitors
             else if (node.Method.DeclaringType == typeof(Queryable) && node.Method.Name == nameof(Queryable.OrderBy))
             {
                 
+            }
+            else if (node.Method.DeclaringType == typeof(Queryable) && node.Method.Name == nameof(Queryable.ThenBy))
+            {
+
+            }
+            else if (node.Method.DeclaringType == typeof(Queryable) && node.Method.Name == nameof(Queryable.OrderByDescending))
+            {
+
+            }
+            else if (node.Method.DeclaringType == typeof(Queryable) && node.Method.Name == nameof(Queryable.ThenByDescending))
+            {
+
+            }
+            else if (node.Method.DeclaringType == typeof(Queryable) && node.Method.Name == nameof(Queryable.Take))
+            {
+
+            }
+            else if (node.Method.DeclaringType == typeof(Queryable) && node.Method.Name == nameof(Queryable.Skip))
+            {
+
             }
 
             return base.VisitMethodCall(node);
