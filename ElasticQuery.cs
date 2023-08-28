@@ -36,9 +36,7 @@ namespace ElasticQuery
         /// This is referenced by reflection from ElasticQuery.Create
         /// </summary>
         /// <param name="elasticQueryProvider"></param>
-        /// <param name="expression"></param>
-        /// <exception cref="InvalidOperationException"></exception>
-        [RequiresUnreferencedCode("This is referenced by reflection from ElasticQuery.Create")]
+        /// <param name="indexName"></param>
         private ElasticQuery(ElasticQueryProvider elasticQueryProvider, string indexName)
         {
             _elasticQueryProvider = elasticQueryProvider;

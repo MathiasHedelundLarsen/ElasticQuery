@@ -23,6 +23,7 @@ namespace ElasticQuery.Internal
             return (IQueryable)constructor.Invoke(new object[] { elasticQueryProvider, expression })!;
         }
 
+        [RequiresUnreferencedCode(InMemoryQueryableExtensionMethodsRequiresUnreferencedCode)]
         public static IQueryable Create(ElasticQueryProvider elasticQueryProvider, string indexName)
         {
             var elementType = elasticQueryProvider.GetAnonymousSchemaType(indexName);
@@ -34,6 +35,7 @@ namespace ElasticQuery.Internal
             return (IQueryable)constructor.Invoke(new object[] { elasticQueryProvider, indexName })!;
         }
 
+        [RequiresUnreferencedCode(InMemoryQueryableExtensionMethodsRequiresUnreferencedCode)]
         public static async Task<IQueryable> CreateAsync(ElasticQueryProvider elasticQueryProvider, string indexName)
         {
             var elementType = await elasticQueryProvider.GetAnonymousSchemaTypeAsync(indexName);
